@@ -1,9 +1,9 @@
      img{
      	margin-left: 0.625em;
      }
-     li{
-     	margin-bottom: 0.01em !important;
-     }
+    li {
+      margin-bottom: 1.325em !important;
+    }
      header {
  		 margin-bottom: 2.625em;
 	 }
@@ -17,12 +17,23 @@
     padding-bottom: 0;
   }
 
-  #sites li a {
+  #timers li a {
     margin-right: 0.6em;
   }
-  #sites li button {
+  #timers li button {
     margin-right: 0.3em;
   }
-  #sites {
+  #timers {
     margin-top: 2.3em;
+  }
+  
+  
+  
+  /**********************************
+  * Jquery.countdown cust mods      *
+  ************************************/
+  .is-countdown{
+      display: inline-block;
+      margin-bottom: 0em;
+      width: 16em;
   }
