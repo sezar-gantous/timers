@@ -32,9 +32,9 @@
         <div class="form-group">
           <label for="intravel"> Intreval: </label>
             <div>
-            <input type="number"  id="hour" placeholder="hours">
-            <input type="number"  id="min" placeholder="min">
-            <input type="number"  id="sec" placeholder="sec">
+            <input type="number" min="0" id="hour" placeholder="hours">
+            <input type="number" min="0" id="min" placeholder="min">
+            <input type="number" min="0" id="sec" placeholder="sec">
           </div>
         </div>
 			  <button type='button' id="add" class="btn btn-default" onClick="addTimer();">Add</button>
@@ -79,9 +79,9 @@
                   <div class="form-group">
                     <label for="intravel"> Intreval: </label>
                       <div>
-                      <input type="number"  id="editHour" placeholder="hours">
-                      <input type="number"  id="editMin" placeholder="min">
-                      <input type="number"  id="editSec" placeholder="sec">
+                      <input type="number" min="0" id="editHour" placeholder="hours">
+                      <input type="number" min="0" id="editMin" placeholder="min">
+                      <input type="number" min="0" id="editSec" placeholder="sec">
                     </div>
                   </div>
 
@@ -91,6 +91,7 @@
             </div>
           </div>
         </div>
+
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" id="editSave">Save changes</button>
@@ -98,7 +99,7 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
-
+        <audio preload="auto" id="alarm" src="alienSiren.wav"></audio>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
    <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
    <script type="text/javascript" src="./js/jquery.plugin.min.js"></script>

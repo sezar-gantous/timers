@@ -39,17 +39,16 @@ var timersArray = [];
     function pause(id,name,time) {
 
        // change the button to play(hide pause button show play button..)
-         $('#buttonPause-'+ name).hide(); 
-         $('#buttonPlay-'+ name).show();
-          
+         $('#buttonPlay-'+ id).show();
+         $('#buttonPause-'+ id).hide(); 
+          console.dir("in Pause: "+id);
           //reset timer
           //timersArray[id].countdown(new Date(new Date().valueOf() + time * 1000));
          // pause timer
           //timersArray[id].countdown('pause');
-          
-         $('#'+name+'-'+id).countdown('option', {until: time });
-         $('#'+name+'-'+id).countdown('pause');  
-
+      
+         $("#"+id).countdown('option', {significant: 3,until: time });
+         $("#"+id).countdown('pause').removeClass('highlight');
         db.child(name).update({
           stat: "pause"
         });
@@ -102,19 +101,27 @@ var timersArray = [];
     }
 
 
-    function play(id,name) {
+    function play(id,name,time) {
       // change the button to pause(hide play button show pause button..)
-         $('#buttonPlay-'+ name).hide();
-         $('#buttonPause-'+ name).show(); 
+         $('#buttonPause-'+ id).show(); 
+         $('#buttonPlay-'+ id).hide();
 
+               
    //no need to update since its already playing
-     if(name !== null){
-      db.child(name).update({
-               stat: "play"
-             });
-     }
-        console.log("timer stated");
-
+     // if(name !== null){
+      // db.child(name).update({
+      //          stat: "play"
+      //        });
+     // }
+         console.log("timer stated:"+id);
+     $('#'+id).countdown('option',{onExpiry: function(){
+                 //alert('done');
+                 console.log("expiring:"+name);
+                  
+                pause(id,name, time);
+                 document.getElementById("alarm").play();
+               }});
+                $('#'+id).countdown('resume');
         //start the timer
          //timersArray[id].countdown('resume');
     }
@@ -133,24 +140,24 @@ var timersArray = [];
      str+= '<b>';
      str+= name;
      str+= '</b>';
-     str+= ' is Set to: <div class="lead" id="'+name+'-'+id+'"></div>';
+     str+= ' is Set to: <div class="lead" id="'+id+'"></div>';
      
-     str+= '<button id="remove-'+ name +'" class="alert alert-danger remove" onClick="removeTimer('+id+','+"'"+name+"'"+');" title="delete timer">'+
-               '<span id="spanRemove-'+ name +'" class="glyphicon glyphicon-remove"></span> </button>';
-     str+= '<button id="edit-'+ name +'" class="alert alert-info edit" onClick="editing('+id+','+hour+','+min+','+sec+','+"'"+name+"'"+','+"'"+task.stat+"'"+');" title="edit Task">'+
-               '<span id="spanEdit-'+ name +'" class="glyphicon glyphicon-pencil"></span> </button>';
-     str+= '<button id="buttonPause-'+ name +'" class="alert alert-warning pause" onClick="pause('+id+','+"'"+name+"',"+hour*3600 + min*60 + sec+');" title="pause timer">'+ 
-              '<span id="spanPause-'+ name +'" class="glyphicon glyphicon glyphicon-pause"></span> </button>';
-     str+= '<button id="buttonPlay-'+ name +'" class="alert alert-success play" onClick="play('+id+','+"'"+name+"'"+');" title="resume timer">'+ 
-              '<span id="spanPlay-'+ name +'" class="glyphicon glyphicon glyphicon-play"></span> </button>';
-     str += '</li>';
+     str+= '<div class="controls"><button id="remove-'+ id +'" class="alert alert-danger remove" onClick="removeTimer('+id+','+"'"+name+"'"+');" title="delete timer">'+
+               '<span id="spanRemove-'+ id +'" class="glyphicon glyphicon-remove"></span> </button>';
+     str+= '<button id="edit-'+ id +'" class="alert alert-info edit" onClick="editing('+id+','+hour+','+min+','+sec+','+"'"+name+"'"+','+"'"+task.stat+"'"+');" title="edit Task">'+
+               '<span id="spanEdit-'+ id +'" class="glyphicon glyphicon-pencil"></span> </button>';
+     str+= '<button id="buttonPause-'+id +'" class="alert alert-warning pause" onClick="pause('+id+','+"'"+name+"',"+hour*3600 + min*60 + sec+');" title="pause timer">'+ 
+              '<span id="spanPause-'+ id +'" class="glyphicon glyphicon glyphicon-stop"></span> </button>';
+     str+= '<button id="buttonPlay-'+id +'" class="alert alert-success play" onClick="play('+id+','+"'"+name+"',"+hour*3600 + min*60 + sec+');" title="resume timer">'+ 
+              '<span id="spanPlay-'+ id +'" class="glyphicon glyphicon glyphicon-play"></span> </button>';
+     str += '</div></li>';
       $("#timers").append(str);
     
      if(task.stat === 'pause'){
        // change the button to play(hide pause button show play button..)
        
-         $('#buttonPause-'+ name).hide(); 
-         $('#buttonPlay-'+ name).show(); 
+         $('#buttonPause-'+ id).hide(); 
+         $('#buttonPlay-'+ id).show(); 
      }
 
 
@@ -159,7 +166,7 @@ var timersArray = [];
 
 /*load all data from firebase*/
 function loadFromJson () {
-  var i=0;
+  var index=0;
  var shortly;
   // Attach an asynchronous callback to read data
   db.on("value", function(snapshot) {
@@ -169,7 +176,7 @@ function loadFromJson () {
         //clear the list first
           $("#timers").empty();
            shortly = new Date(); 
-          
+          index=0;
         snapshot.forEach(function(s) {
           //console.log(s.val().stat);
             var task = s.val();
@@ -177,18 +184,21 @@ function loadFromJson () {
           timersArray = [];
           
            //print out html with data
-           print(task,i);
+           print(task,index);
            shortly.setSeconds(shortly.getSeconds() + (task.hour*3600 + task.min*60 + task.sec));
-           $('#'+task.name+'-'+i).countdown({until: + (task.hour*360 + task.min*6 + task.sec),  
+           $('#'+index).countdown({significant: 3,onTick:almostUp,until: + (task.hour*360 + task.min*6 + task.sec),  
                onExpiry: function(){
-                 alert('done');
-                pause(i,task.name, (task.hour*3600 + task.min*60 + task.sec));
+                 //alert('done');
+                 //console.log("expiring");
+                pause(index,task.name, (task.hour*3600 + task.min*60 + task.sec));
+                   
+                 document.getElementById("alarm").play();
                }}); 
             if(task.stat === 'pause'){
-               $('#'+task.name+'-'+i).countdown('pause');
+               $('#'+index).countdown('pause').removeClass('highlight');
             }                   
            
-           i++;
+           index++;
         });
         
        
@@ -212,4 +222,12 @@ function loadFromJson () {
    
 
 }
+
+
+
+function almostUp(periods) { 
+    if ($.countdown.periodsToSeconds(periods) <= 5) { 
+        $(this).addClass('highlight'); 
+    } 
+} 
 
