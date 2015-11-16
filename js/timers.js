@@ -47,7 +47,7 @@ var timersArray = [];
          // pause timer
           //timersArray[id].countdown('pause');
       
-         $("#"+id).countdown('option', {significant: 3,until: time });
+         $("#"+id).countdown('option', {significant: 3,until: "+'"+time +"'"});
          $("#"+id).countdown('pause').removeClass('highlight');
         db.child(name).update({
           stat: "pause"
@@ -60,7 +60,7 @@ var timersArray = [];
      //clear the whole li anf children fron DOM
      //$("li-"+url).remove();
 
-      timersArray.pop(id);
+      //timersArray.pop(id);
      
        console.log("removing");
        //remove from firebase
@@ -83,7 +83,7 @@ var timersArray = [];
         
         //remove current 
            db.child(task).remove();
-           timersArray.pop(id);
+           //timersArray.pop(id);
         //creat a new one....
         db.child($("#editTask").val()).set({
           name: $("#editTask").val(),
@@ -133,8 +133,7 @@ var timersArray = [];
      var min = task.min;
      var sec = task.sec;
      var name = task.name;
-     var date = new Date(new Date().valueOf() + (task.hour*3600 + task.min*60 + task.sec) * 1000);
-
+     var date =task.hour+"h +"+task.min+"m+ "+task.sec+"s";
 
      str+= '<li id="li-'+ name +'" class="list-group-item">';
      str+= '<b>';
@@ -146,9 +145,9 @@ var timersArray = [];
                '<span id="spanRemove-'+ id +'" class="glyphicon glyphicon-remove"></span> </button>';
      str+= '<button id="edit-'+ id +'" class="alert alert-info edit" onClick="editing('+id+','+hour+','+min+','+sec+','+"'"+name+"'"+','+"'"+task.stat+"'"+');" title="edit Task">'+
                '<span id="spanEdit-'+ id +'" class="glyphicon glyphicon-pencil"></span> </button>';
-     str+= '<button id="buttonPause-'+id +'" class="alert alert-warning pause" onClick="pause('+id+','+"'"+name+"',"+hour*3600 + min*60 + sec+');" title="pause timer">'+ 
+     str+= '<button id="buttonPause-'+id +'" class="alert alert-warning pause" onClick="pause('+id+','+"'"+name+"',"+"'"+date+"'"+');" title="pause timer">'+ 
               '<span id="spanPause-'+ id +'" class="glyphicon glyphicon glyphicon-stop"></span> </button>';
-     str+= '<button id="buttonPlay-'+id +'" class="alert alert-success play" onClick="play('+id+','+"'"+name+"',"+hour*3600 + min*60 + sec+');" title="resume timer">'+ 
+     str+= '<button id="buttonPlay-'+id +'" class="alert alert-success play" onClick="play('+id+','+"'"+name+"',"+"'"+date+"'"+');" title="resume timer">'+ 
               '<span id="spanPlay-'+ id +'" class="glyphicon glyphicon glyphicon-play"></span> </button>';
      str += '</div></li>';
       $("#timers").append(str);
@@ -167,7 +166,7 @@ var timersArray = [];
 /*load all data from firebase*/
 function loadFromJson () {
   var index=0;
- var shortly;
+ var time;
   // Attach an asynchronous callback to read data
   db.on("value", function(snapshot) {
    
@@ -175,22 +174,25 @@ function loadFromJson () {
             // iterate through data
         //clear the list first
           $("#timers").empty();
-           shortly = new Date(); 
+           
           index=0;
-        snapshot.forEach(function(s) {
-          //console.log(s.val().stat);
-            var task = s.val();
+          
           //empty array first
           timersArray = [];
           
+        snapshot.forEach(function(s) {
+          //console.log(s.val().stat);
+            var task = s.val();
+          timersArray.push(index);
            //print out html with data
            print(task,index);
-           shortly.setSeconds(shortly.getSeconds() + (task.hour*3600 + task.min*60 + task.sec));
-           $('#'+index).countdown({significant: 3,onTick:almostUp,until: + (task.hour*360 + task.min*6 + task.sec),  
+          time ="+'"+task.hour+"h +"+task.min+"m+ "+task.sec+"s'";
+       //   console.log(time);
+           $('#'+index).countdown({significant: 3,onTick:almostUp,until: time,  
                onExpiry: function(){
                  //alert('done');
                  //console.log("expiring");
-                pause(index,task.name, (task.hour*3600 + task.min*60 + task.sec));
+                pause(index,task.name, time);
                    
                  document.getElementById("alarm").play();
                }}); 
