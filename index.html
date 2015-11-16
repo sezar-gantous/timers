@@ -99,7 +99,12 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
-        <audio preload="auto" id="alarm" src="alienSiren.wav"></audio>
+        <audio> 
+        <audio preload="auto" id="alarm" >
+        <source src="firePager.mp3">
+        <source src="firePager.ogg">
+        <source src="firePager.wav">
+      </audio>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
    <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
    <script type="text/javascript" src="./js/jquery.plugin.min.js"></script>
