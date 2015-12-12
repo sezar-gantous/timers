@@ -1,4 +1,7 @@
 
+
+var db = new Firebase("https://wakeupheroku.firebaseio.com/timers");
+var timers;
 var empty = '<li class="list-group-item" id="empty">Nothing to time...</li>';
 var timersArray = [];
 
@@ -19,9 +22,18 @@ var timersArray = [];
         var min = $("#min").val();
         var sec = $("#sec").val();
         var hour = $("#hour").val();
-       
+       //console.log(timersArray.length);
+/*       timersArray.push({
+        "name": task,
+          "min" : temp = (min === "")?0:min,
+          "sec" : temp = (sec==="")?0:sec,
+          "hour" : temp = (hour==="")?0:hour,
+        "stat":"pause"
+       });*/
 
-       db.child(task).set({
+var totalTasks = (timersArray === null)? 0: timersArray.length;
+
+       db.child(totalTasks).set({
         name: task,
           min : temp = (min === "")?0:min,
           sec : temp = (sec==="")?0:sec,
@@ -31,6 +43,9 @@ var timersArray = [];
 
 
       $("#info").hide('fast');
+
+         $("#task,#min,#sec,#hour").val('');
+
 
     }
 
@@ -49,7 +64,7 @@ var timersArray = [];
       
          $("#"+id).countdown('option', {significant: 3,until: "+'"+time +"'"});
          $("#"+id).countdown('pause').removeClass('highlight');
-        db.child(name).update({
+        db.child(id).update({
           stat: "pause"
         });
     }
@@ -60,11 +75,11 @@ var timersArray = [];
      //clear the whole li anf children fron DOM
      //$("li-"+url).remove();
 
-      //timersArray.pop(id);
+      timersArray.splice(id, 1);
      
-       console.log("removing");
+          //console.log("removing"+id);
        //remove from firebase
-      db.child(name).remove();
+      db.set(timersArray);
       
 
     }
@@ -78,23 +93,32 @@ var timersArray = [];
       $("#editMin").val(min);
       $("#editSec").val(sec);
 
+       $("#editSave").off();
       //add click event for save button
       $("#editSave").click(function(){
         
         //remove current 
-           db.child(task).remove();
+           //db.child(id).remove();
            //timersArray.pop(id);
         //creat a new one....
-        db.child($("#editTask").val()).set({
+        //console.log('id: '+id+' array id: '+timersArray[id]);
+        db.child(id).update({
           name: $("#editTask").val(),
           min : temp = ($("#editMin").val() === "")?0:$("#editMin").val(),
           sec : temp = ($("#editSec").val()==="")?0:$("#editSec").val(),
           hour : temp = ($("#editHour").val())===""?0:$("#editHour").val(),
           stat: status
         });
+  /*      timersArray[id] = {
+          "name": $("#editTask").val(),
+          "min": temp = ($("#editMin").val() === "")?0:$("#editMin").val(),
+          "sec": temp = ($("#editSec").val()==="")?0:$("#editSec").val(),
+          "hour" : temp = ($("#editHour").val())===""?0:$("#editHour").val(),
+          "stat": status
+        };*/
 
         $('#editModal').modal('hide');
-
+         
       });
 
       $('#editModal').modal('show')
@@ -183,7 +207,7 @@ function loadFromJson () {
         snapshot.forEach(function(s) {
           //console.log(s.val().stat);
             var task = s.val();
-          timersArray.push(index);
+          timersArray.push(task);
            //print out html with data
            print(task,index);
           time ="+'"+task.hour+"h +"+task.min+"m+ "+task.sec+"s'";
