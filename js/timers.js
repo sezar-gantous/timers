@@ -130,6 +130,9 @@ var totalTasks = (timersArray === null)? 0: timersArray.length;
          $('#buttonPause-'+ id).show(); 
          $('#buttonPlay-'+ id).hide();
 
+         document.getElementById('alarm').volume =0.0;
+         document.getElementById('alarm').play();
+         document.getElementById('alarm').pause();
                
    //no need to update since its already playing
      // if(name !== null){
@@ -143,6 +146,8 @@ var totalTasks = (timersArray === null)? 0: timersArray.length;
                  console.log("expiring:"+name);
                   
                 pause(id,name, time);
+                 document.getElementById('alarm').volume =1.0;
+                 document.getElementById('alarm').load();
                  document.getElementById("alarm").play();
                }});
                 $('#'+id).countdown('resume');
